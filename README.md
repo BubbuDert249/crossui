@@ -6,8 +6,6 @@ PyDroid 3 or newer on Android (Kivy required) <br>
 Pythonista 3 or Pyto on iOS/iPadOS <br>
 Pyodide or Brython on HTML <br>
 Use import crossui (python name need to be crossui.py) to run CrossUI <br>
-Install Kivy in Pydroid 3: <br>
-```pip install kivy``` <br>
 How it works: <br>
 For Windows, macOS and Linux, it uses Tkinter <br>
 For Android, it uses Kivy <br>
