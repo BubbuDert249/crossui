@@ -498,6 +498,124 @@ elif platform == "ios":
             time.sleep(seconds)
             action()
         threading.Thread(target=timer_func, daemon=True).start()
+elif platform == "brython" or platform == "pyodide":
+    from browser import document, html, timer  # Brython and Pyodide support this
+    
+    _widgets = {}
+
+    def _init():
+        # Nothing special needed for init on web
+        pass
+
+    def drawtext(text, x, y, z, hexcolor):
+        span = html.SPAN(text, style=f"color:{hexcolor};position:absolute;left:{x}px;top:{y}px;z-index:{z};")
+        document <= span
+        _widgets[f"text_{len(_widgets)}"] = span
+
+    def setbg(hexcolor):
+        document.body.style.backgroundColor = hexcolor
+
+    def drawimg(filename, x, y, z, width, height):
+        img = html.IMG(src=filename, style=f"position:absolute;left:{x}px;top:{y}px;z-index:{z};width:{width}px;height:{height}px;")
+        document <= img
+        _widgets[f"img_{filename}"] = img
+
+    def setwindowname(title):
+        document.title = title
+
+    def setwindowicon(filename):
+        # Change favicon
+        from browser import window
+        link = document.select_one("link[rel~='icon']")
+        if not link:
+            link = html.LINK(rel="icon")
+            document.head <= link
+        link.attrs["href"] = filename
+
+    def setwindowsize(width, height):
+        # Not applicable in browser; could resize iframe or ignore
+        pass
+
+    def setfullscreen(value):
+        # Request fullscreen or exit fullscreen for the document
+        from browser import window
+        doc = window.document
+        if value:
+            if hasattr(doc.documentElement, 'requestFullscreen'):
+                doc.documentElement.requestFullscreen()
+        else:
+            if hasattr(doc, 'exitFullscreen'):
+                doc.exitFullscreen()
+
+    def showmsgbox(title, message):
+        # Simple alert for now
+        from browser import window
+        window.alert(f"{title}\n\n{message}")
+
+    def addbutton(text, action, x, y, z):
+        btn = html.BUTTON(text, style=f"position:absolute;left:{x}px;top:{y}px;z-index:{z};")
+        btn.bind("click", lambda ev: action())
+        document <= btn
+        _widgets[f"button_{text}"] = btn
+
+    def addtxtbox(x, y, z, width, height):
+        inp = html.INPUT(type="text", style=f"position:absolute;left:{x}px;top:{y}px;z-index:{z};width:{width}px;height:{height}px;")
+        document <= inp
+        _widgets["textbox"] = inp
+
+    def txtinput():
+        inp = _widgets.get("textbox")
+        if inp:
+            return inp.value
+        return ""
+
+    def addcheckbox(label, x, y, z):
+        container = html.DIV(style=f"position:absolute;left:{x}px;top:{y}px;z-index:{z};")
+        chk = html.INPUT(type="checkbox")
+        lbl = html.LABEL(label)
+        container <= chk + lbl
+        document <= container
+        _widgets["checkbox"] = chk
+
+    def checkboxvalue():
+        chk = _widgets.get("checkbox")
+        if chk:
+            return chk.checked
+        return False
+
+    def adddropdown(options, x, y, z):
+        opts = options.split(".%")
+        select = html.SELECT(style=f"position:absolute;left:{x}px;top:{y}px;z-index:{z};")
+        for o in opts:
+            option = html.OPTION(o)
+            select <= option
+        document <= select
+        _widgets["dropdown"] = select
+
+    def dropdownvalue():
+        sel = _widgets.get("dropdown")
+        if sel:
+            return sel.value
+        return ""
+
+    def addslider(minimum, maximum, x, y, z):
+        slider = html.INPUT(type="range", min=str(minimum), max=str(maximum), style=f"position:absolute;left:{x}px;top:{y}px;z-index:{z};")
+        document <= slider
+        _widgets["slider"] = slider
+
+    def slidervalue():
+        slider = _widgets.get("slider")
+        if slider:
+            try:
+                return float(slider.value)
+            except Exception:
+                return 0
+        return 0
+
+    def settimeout(seconds, action):
+        # Use browser.timer
+        timer.set_timeout(action, int(seconds*1000))
+
 
 else:
     # fallback dummy functions
