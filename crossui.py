@@ -16,6 +16,8 @@ def _detect_platform():
             return "macos"
     elif pf == "windows":
         return "windows"
+    elif pf == "windowsphone":
+        return "wp"
     elif pf == "linux":
         # Check for pyodide or brython by globals
         try:
@@ -173,6 +175,34 @@ if platform == "windows" or platform == "linux" or platform == "macos":
             time.sleep(seconds)
             action()
         threading.Thread(target=timer_func, daemon=True).start()
+elif platform == "windowsphone":
+    import wpui
+    wpui.init()
+    def drawtext(txt, x, y, z, hexcolor):
+        wpui.label(txt, x, y, hexcolor)
+    def setbg(hex):
+        wpui.bgcolor(hex)
+    def drawimg(filename, x, y, z, width, height):
+        wpui.image(filename, x, y, width, height)
+    def setwindowname(title):
+        pass
+    def setwindowicon(file):
+        pass
+    def setwindowsize(width, height):
+        pass
+    def setfullscreen(value):
+        pass
+    def showmsgbox(title, message):
+        wpui.msgbox(message, title, "pass")
+    def addbutton(text, cmd, x, y, z):
+        wpui.button(text, x, y, 120, 50, "#ffffff", cmd)
+    def addtxtbox(x, y, z, width, height):
+        wpui.txtbox(x, y, width, height)
+    def txtinput():
+        return wpui.txtvalue()
+    def addcheckbox(label, x, y, z):
+            wpui.checkbox(label, x, y)
+    # will add more, still in beta
 
 elif platform == "android":
     from kivy.app import App
