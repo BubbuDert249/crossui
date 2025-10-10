@@ -1,12 +1,9 @@
 import sys
 sys.dont_write_bytecode = True
-
+    pf = platform.system().lower()
 # Platform detection
 def _detect_platform():
-    if "ANDROID_ARGUMENT" in sys.argv or "ANDROID_DATA" in sys.argv or "ANDROID_BOOTLOGO" in sys.argv:
-        return "android"
-    import platform
-    pf = platform.system().lower()
+
     if pf == "darwin":
         # Could be macOS or iOS - check ios
         try:
@@ -28,6 +25,11 @@ def _detect_platform():
         try:
             import browser
             return "brython"
+        except ImportError:
+            return "linux"
+        try:
+            import jnius
+            return "android"
         except ImportError:
             return "linux"
     return "unknown"
@@ -202,7 +204,17 @@ elif platform == "windowsphone":
         return wpui.txtvalue()
     def addcheckbox(label, x, y, z):
             wpui.checkbox(label, x, y)
-    # will add more, still in beta
+        checkboxinternal = label
+    def checkboxvalue():
+        wpui.valuecheckbox(label)
+    def adddropdown(options,x,y,z):
+        wpui.dropdown(options,x,y, 220, 30)
+    def dropdownvalue():
+        wpui.dropdownvalue()
+    def addslider(min,max,x,y,z):
+        wpui.slider("crossui_slider", min, max, x, y, 200)
+    def slidervalue():
+        wpui.value("crossui_slider")
 
 elif platform == "android":
     from kivy.app import App
